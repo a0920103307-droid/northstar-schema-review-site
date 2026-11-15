@@ -26,6 +26,7 @@ body {
   line-height: 1.55;
 }
 a { color: inherit; }
+.hero-copy, .status-card, .price-card, .limit-columns > div, .check-grid article, .steps article { min-width: 0; }
 .draft-banner {
   padding: .55rem 1rem;
   color: #142018;
@@ -194,9 +195,18 @@ footer p { max-width: 44rem; }
   .strip div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
 }
 @media (max-width: 620px) {
+  body { overflow-x: hidden; }
+  .site-header, main, footer { padding-inline: 1rem; }
+  .hero { gap: 2rem; }
   .check-grid, .steps, .limit-columns { grid-template-columns: 1fr; }
   .section { padding: 4rem 0; }
-  h1 { font-size: clamp(2.8rem, 17vw, 4.2rem); }
+  h1 { font-size: clamp(2.35rem, 13vw, 3.6rem); max-width: 12ch; overflow-wrap: anywhere; }
+  .lede, .proof-line, .warning, .small { overflow-wrap: anywhere; }
+  .hero-actions { display: grid; grid-template-columns: 1fr; }
+  .button { width: 100%; max-width: 100%; padding-inline: .8rem; text-align: center; white-space: normal; }
+  .status-card { width: 100%; max-width: 100%; }
+  .score-row { flex-wrap: wrap; }
+  .mini-findings li { min-width: 0; overflow-wrap: anywhere; }
   .strip { grid-template-columns: 1fr; }
   .strip div { border-right: 0; border-bottom: 1px solid var(--line); }
   .strip div:last-child { border-bottom: 0; }
