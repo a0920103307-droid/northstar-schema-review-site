@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A production-focused review of Prisma-generated PostgreSQL migration SQL, runner behavior, backfills, constraints, compatibility and rollback.">
+  <title>Prisma-Generated PostgreSQL Migration Risks | Northstar Schema Review</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="article.css">
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Local content preview — not deployed. Public inquiries use the contact paths on the main site; no customer data is collected here.
+  </div>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="writing.html">Guides</a>
+      <a href="index.html#scope">Scope</a>
+      <a href="preflight.html">Free preflight</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="https://www.upwork.com/services/product/2121960555841830491">Upwork</a>
+    </nav>
+  </header>
+  <main class="article-shell">
+    <a class="back-link" href="writing.html">← All technical guides</a>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">Prisma deployment guide</p>
+        <h1>Prisma-Generated PostgreSQL Migration Risks</h1>
+        <p class="lede">Technical education for teams preparing a production migration. This is not a safety guarantee or a substitute for staging validation and qualified human review.</p>
+      </header>
+      <div class="article-body">
+        <h2>1. Review generated SQL, not only the Prisma schema</h2>
+<p>The Prisma schema explains intent. The migration folder records what will actually execute.</p>
+<p>Open the generated SQL and classify each change:</p>
+<ul><li>add nullable column;</li><li>add table or index;</li><li>backfill data;</li><li>add constraint;</li><li>change type;</li><li>rename or replace;</li><li>drop column or table;</li><li>change enum;</li><li>custom SQL outside Prisma&#x27;s model.</li></ul>
+<p>Schema-level intent can hide a destructive generated operation. A rename may be represented as a drop and create unless the migration is edited and reviewed carefully.</p>
+<h2>2. Keep development and production workflows separate</h2>
+<p>Use development commands in development. Use the production deployment path in CI/CD.</p>
+<p>Never treat an interactive development command as a safe production rehearsal. Development workflows may assume that resetting or recreating local state is acceptable; production data does not have that property.</p>
+<p>Prisma&#x27;s documentation explicitly separates these workflows. The deployment review should record which command, environment and account executes the migration.</p>
+<h2>3. Account for the migration-runner transaction model</h2>
+<p>The generated SQL is executed by a runner. That runner may apply a transaction boundary, use a lock or serialize concurrent deployments.</p>
+<p>Ask:</p>
+<ul><li>Does this migration run inside a transaction?</li><li>Is custom SQL allowed?</li><li>Are all files applied in one transaction or individually?</li><li>Can a migration be marked non-transactional?</li><li>What happens after partial failure?</li><li>Are checksums or migration records updated consistently?</li></ul>
+<p>Runner behavior matters for concurrent index creation, long backfills, enum changes and partial failures.</p>
+<h2>4. Do not let <code>CREATE INDEX CONCURRENTLY</code> run inside a transaction</h2>
+<p>PostgreSQL rejects concurrent index creation inside a transaction block. A migration may look safe in isolation while the runner wraps it automatically.</p>
+<p>Verify:</p>
+<ul><li>a dedicated non-transactional migration path;</li><li>that no explicit <code>BEGIN</code> surrounds the statement;</li><li>the index is valid after completion;</li><li>interrupted builds are detected and cleaned up;</li><li>application code can tolerate the index being unavailable until it is valid.</li></ul>
+<p>The PostgreSQL <a href="https://www.postgresql.org/docs/current/sql-createindex.html">CREATE INDEX documentation</a> is the primary reference for the transaction restriction and concurrent-build behavior.</p>
+<h2>5. Split destructive schema changes into expand and contract</h2>
+<p>Generated changes should not remove fields that the previous application version still uses.</p>
+<p>Use:</p>
+<ol><li>Expand: add nullable columns or new tables.</li><li>Dual-write: update both representations.</li><li>Backfill: process existing rows in bounded batches.</li><li>Verify: reconcile counts and invalid values.</li><li>Contract: add final constraints and switch reads.</li><li>Cleanup: remove legacy structures in a later release.</li></ol>
+<p>This pattern is especially important for rolling deployments where old and new application instances coexist.</p>
+<h2>6. Treat backfills as application data migrations</h2>
+<p>Prisma can manage schema changes, but data movement still requires an operational design.</p>
+<p>Define:</p>
+<ul><li>source and target mapping;</li><li>stable batch ordering;</li><li>transaction or commit scope;</li><li>idempotence;</li><li>progress checkpoints;</li><li>retries;</li><li>failure isolation;</li><li>row-count reconciliation;</li><li>what happens when application writes modify a row during the backfill.</li></ul>
+<p>One giant <code>UPDATE</code> is not a complete data migration plan merely because it has a <code>WHERE</code> clause.</p>
+<h2>7. Constraint changes need staged validation</h2>
+<p>For existing tables:</p>
+<ul><li>add foreign keys and checks as <code>NOT VALID</code>;</li><li>reconcile invalid rows;</li><li>validate in a separate controlled step;</li><li>add final <code>NOT NULL</code> constraints only after the data is proven complete.</li></ul>
+<p>The PostgreSQL <a href="https://www.postgresql.org/docs/current/sql-altertable.htm">ALTER TABLE documentation</a> explains the validation and concurrency options. The operational decision still depends on table size, traffic and lock timeouts.</p>
+<h2>8. Review enum and type changes carefully</h2>
+<p>Enum additions, type changes and generated column changes can affect:</p>
+<ul><li>transaction visibility;</li><li>old application versions;</li><li>API serializers;</li><li>database defaults;</li><li>function signatures;</li><li>indexes and constraints.</li></ul>
+<p>A migration can commit successfully and still leave the application unable to use the new value or representation.</p>
+<h2>9. Verify migration history and deployment order</h2>
+<p>Before deploying:</p>
+<ul><li>every pending migration has been reviewed;</li><li>migration files are immutable after review;</li><li>the target environment is at the expected baseline;</li><li>no manual production change has created schema drift;</li><li>failed or baselined migrations have an explicit resolution;</li><li>the deployment job uses the intended database role;</li><li>concurrent deployments cannot race.</li></ul>
+<p>Migration history is an operational record. It is not proof that each SQL change is safe.</p>
+<h2>10. Test rollback and forward-fix at the right layer</h2>
+<p>Prisma records migrations, but application rollback and database rollback are different decisions.</p>
+<p>Ask:</p>
+<ul><li>Can old application code run against the expanded schema?</li><li>Is the generated migration reversible without data loss?</li><li>Is a reverse migration available and tested?</li><li>Would a failed migration leave the history table inconsistent?</li><li>Should the team stop, revert code, restore, or continue forward with a corrective migration?</li></ul>
+<p>A drop cannot be undone by deleting a migration record.</p>
+<h2>What a Prisma migration review should include</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Input</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td>Prisma schema</td><td>Shows intended model and relations</td></tr>
+<tr><td>Generated migration SQL</td><td>Shows what PostgreSQL will execute</td></tr>
+<tr><td>Migration runner commands and environment</td><td>Determines transaction and lock behavior</td></tr>
+<tr><td>PostgreSQL version</td><td>Changes available syntax and lock behavior</td></tr>
+<tr><td>Table-size and traffic tier</td><td>Separates theoretical from operational risk</td></tr>
+<tr><td>Deployment model</td><td>Identifies old/new version compatibility</td></tr>
+<tr><td>Backup and restore evidence</td><td>Determines whether destructive changes can recover</td></tr>
+<tr><td>Rollback or forward-fix plan</td><td>Defines what happens after a failed step</td></tr>
+</tbody></table></div>
+<h2>Common false sense of safety</h2>
+<ul><li>“It passed <code>prisma validate</code>.”</li><li>“It ran on an empty local database.”</li><li>“The migration is in source control.”</li><li>“The schema looks backward compatible.”</li><li>“Prisma uses an advisory lock.”</li><li>“There are no scanner findings.”</li></ul>
+<p>Each statement can be true while a production release still fails because of row volume, lock duration, runner behavior, application compatibility or missing recovery evidence.</p>
+<h2>Final checklist</h2>
+<ul><li>Generated SQL was reviewed line by line.</li><li>Destructive and compatibility-changing operations are separated.</li><li>Development and production commands are clearly distinguished.</li><li>Runner transaction behavior is known.</li><li>Concurrent index creation is outside transactions.</li><li>Backfill is bounded and reconciled.</li><li>Constraint validation is staged.</li><li>Old/new application compatibility was tested.</li><li>Backup, restore and rollback/forward-fix evidence exists.</li><li>The release was rehearsed on representative data.</li></ul>
+<p>If several items are unknown, split the migration. A smaller, observable expand phase is usually safer than approving a generated bundle whose production behavior has not been evidenced.</p>
+<h2>Related sample</h2>
+<ul><li>Synthetic migration preflight report: https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html</li><li>Current file-only review service: https://www.upwork.com/services/product/2121960555841830491</li></ul>
+<p>The sample is educational and synthetic. It is not a customer case or a guarantee that a Prisma migration is safe.</p>
+      </div>
+      <aside class="article-cta">
+        <p class="eyebrow">Review the evidence, not just the SQL</p>
+        <h2>Need a bounded PostgreSQL preflight?</h2>
+        <p>Start with a redacted scope. Do not send credentials, customer rows or production access.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="preflight.html">Run free browser scan</a>
+          <a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review on Upwork</a>
+          <a class="button secondary" href="sample-report.html">View synthetic report</a>
+        </div>
+      </aside>
+    </article>
+  </main>
+  <footer>
+    <p>Northstar Schema Labs is a working name. Content is educational and synthetic; no customer relationship, production verification, certification or revenue is claimed.</p>
+    <p>Static HTML · no analytics · no cookies · no form · no file intake</p>
+  </footer>
+</body>
+</html>

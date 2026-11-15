@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A practical PostgreSQL migration safety checklist covering compatibility, locks, backfills, constraints, rollback, restore evidence and production-like rehearsal.">
+  <title>PostgreSQL Migration Safety Checklist Before Production | Northstar Schema Review</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="article.css">
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Local content preview — not deployed. Public inquiries use the contact paths on the main site; no customer data is collected here.
+  </div>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="writing.html">Guides</a>
+      <a href="index.html#scope">Scope</a>
+      <a href="preflight.html">Free preflight</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="https://www.upwork.com/services/product/2121960555841830491">Upwork</a>
+    </nav>
+  </header>
+  <main class="article-shell">
+    <a class="back-link" href="writing.html">← All technical guides</a>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">PostgreSQL release guide</p>
+        <h1>PostgreSQL Migration Safety Checklist Before Production</h1>
+        <p class="lede">Technical education for teams preparing a production migration. This is not a safety guarantee or a substitute for staging validation and qualified human review.</p>
+      </header>
+      <div class="article-body">
+        <h2>1. Separate compatibility changes from destructive changes</h2>
+<p>Start by classifying every migration file:</p>
+<ul><li><strong>Expand:</strong> add nullable columns, new tables, new indexes or backward-compatible functions.</li><li><strong>Migrate:</strong> backfill data, dual-write, reconcile old and new representations.</li><li><strong>Contract:</strong> add stricter constraints, stop old readers/writers and remove legacy objects.</li><li><strong>Destructive:</strong> <code>DROP TABLE</code>, <code>DROP COLUMN</code>, <code>TRUNCATE</code>, or unqualified <code>DELETE</code>/<code>UPDATE</code>.</li></ul>
+<p>A single release containing all four categories is difficult to roll back and difficult to observe. Expand first. Backfill separately. Constrain after the data is proven valid. Remove legacy objects only after a compatibility window.</p>
+<h2>2. Check old and new application versions</h2>
+<p>During a rolling deployment, both application versions may run at the same time.</p>
+<p>Ask:</p>
+<ul><li>Can the old application run against the expanded schema?</li><li>Can the new application run before the backfill is complete?</li><li>Does the new code write both old and new representations during transition?</li><li>Will a rollback leave rows that the old application cannot understand?</li><li>Do background jobs, reports, exports or integrations read the affected objects?</li></ul>
+<p>A column rename can look trivial in SQL while breaking every old process that still uses the previous name.</p>
+<h2>3. Classify lock and rewrite risk</h2>
+<p>Migration review must account for table size and traffic.</p>
+<p>Questions to answer:</p>
+<ul><li>Will this operation scan or rewrite the table?</li><li>Which lock does it acquire?</li><li>Which reads and writes does that lock block?</li><li>What are the lock timeout and statement timeout?</li><li>How long did the operation take on production-like data?</li><li>Can a waiting migration block later queries behind it?</li></ul>
+<p>Do not approve a migration from an empty staging database. A fast operation on 1,000 rows may behave very differently on a table with 10 million rows.</p>
+<p>PostgreSQL&#x27;s <a href="https://www.postgresql.org/docs/current/sql-altertable.htm">ALTER TABLE documentation</a> and <a href="https://www.postgresql.org/docs/current/explicit-locking.html">explicit locking documentation</a> describe the relevant lock behavior. The exact impact still depends on the operation, PostgreSQL version, data volume and deployment context.</p>
+<h2>4. Build indexes outside transaction wrappers</h2>
+<p><code>CREATE INDEX CONCURRENTLY</code> can reduce write blocking, but PostgreSQL does not allow it inside a transaction block. Migration frameworks sometimes wrap a migration in a transaction automatically.</p>
+<p>Check:</p>
+<ul><li>Does the runner wrap this file in <code>BEGIN</code> and <code>COMMIT</code>?</li><li>Can this migration be marked non-transactional?</li><li>Is the index valid after the build?</li><li>What happens if the build is interrupted?</li></ul>
+<p>PostgreSQL&#x27;s <a href="https://www.postgresql.org/docs/current/sql-createindex.html">CREATE INDEX documentation</a> explicitly notes that a regular index build can run inside a transaction block, while a concurrent build cannot.</p>
+<p>A text scanner may see the SQL but not the framework&#x27;s transaction behavior. That requires runner-specific review.</p>
+<h2>5. Add constraints in the safest order</h2>
+<p>For existing tables, separate adding a constraint from validating it.</p>
+<p>For a foreign key or <code>CHECK</code> constraint:</p>
+<ol><li>Add the constraint as <code>NOT VALID</code>.</li><li>Verify and reconcile existing data.</li><li>Validate the constraint in a separate controlled migration.</li><li>Monitor locks and errors while validation runs.</li></ol>
+<p>PostgreSQL&#x27;s <a href="https://www.postgresql.org/docs/current/sql-altertable.htm">ALTER TABLE documentation</a> describes <code>NOT VALID</code> and <code>VALIDATE CONSTRAINT</code> as tools for improving concurrency when a table may contain pre-existing violations.</p>
+<p>For <code>NOT NULL</code>:</p>
+<ul><li>first prove that no rows contain <code>NULL</code>;</li><li>consider a validated <code>NOT VALID</code> not-null check on versions that support it;</li><li>set <code>NOT NULL</code> only after the preconditions are evidenced;</li><li>account for the scan and lock behavior of the exact PostgreSQL version.</li></ul>
+<h2>6. Design the backfill as an operational job</h2>
+<p>Do not treat a backfill as one large <code>UPDATE</code> merely because it has a <code>WHERE</code> clause.</p>
+<p>The backfill plan should include:</p>
+<ul><li>stable key ranges or another deterministic pagination strategy;</li><li>bounded batch size;</li><li>commit per batch;</li><li>idempotent retry behavior;</li><li>progress checkpoints;</li><li>processed, skipped and failed row counts;</li><li>reconciliation against the source of truth;</li><li>lock duration, replication lag and storage monitoring.</li></ul>
+<p>Also decide what happens if an application write changes the row while the backfill is running. Dual-write, database triggers, queues or carefully ordered batch jobs may be appropriate, but each choice changes the failure modes.</p>
+<h2>7. Distinguish backup existence from recoverability</h2>
+<p>“We have daily backups” is not enough.</p>
+<p>Before approving a destructive or difficult-to-reverse step, verify:</p>
+<ul><li>retention period;</li><li>restore time objective;</li><li>point-in-time recovery availability;</li><li>who can authorize a restore;</li><li>whether the restore has been tested recently;</li><li>whether the application can tolerate the data loss implied by recovery.</li></ul>
+<p>A reverse migration cannot reconstruct a dropped column or table unless the data was exported or otherwise preserved.</p>
+<h2>8. Choose rollback or forward-fix before deployment</h2>
+<p>Every risky migration should have a stop condition and a response plan.</p>
+<p>Examples:</p>
+<ul><li>invalid concurrent index;</li><li>unexpected lock duration;</li><li>replication lag above threshold;</li><li>constraint validation failure;</li><li>increasing application error rate;</li><li>data-quality mismatch.</li></ul>
+<p>For each condition, define whether the team will:</p>
+<ul><li>stop the release;</li><li>revert application code;</li><li>drop or defer a constraint;</li><li>continue forward with a narrower fix;</li><li>restore from backup.</li></ul>
+<p>“Rollback” is not a complete answer unless the team knows exactly what can and cannot be reversed.</p>
+<h2>9. Rehearse with production-like data</h2>
+<p>Use representative row counts, index sizes and concurrency where possible.</p>
+<p>The rehearsal should test:</p>
+<ul><li>old and new application versions;</li><li>migration runner transaction behavior;</li><li>lock timeout and statement timeout;</li><li>one successful and one failed backfill batch;</li><li>constraint validation with invalid and valid data sets;</li><li>query plans for affected queries;</li><li>storage headroom;</li><li>replication lag;</li><li>the final stop or rollback procedure.</li></ul>
+<p>The goal is not to prove that nothing can fail. The goal is to learn how the system fails before production does.</p>
+<h2>10. Record evidence, not opinions</h2>
+<p>Create an evidence table:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Claim</th><th>Evidence state</th><th>Supporting artifact</th><th>Remaining risk</th></tr></thead>
+<tbody>
+<tr><td>The migration runner does not wrap this file in a transaction</td><td>Verified / Configured / Unverified</td><td>Runner configuration or migration output</td><td>If unverified, concurrent index creation may fail</td></tr>
+<tr><td>The backfill is complete</td><td>Verified / Replica-only / Unverified</td><td>Reconciliation query and counts</td><td>Missing rows may fail later constraints</td></tr>
+<tr><td>The new index is valid</td><td>Verified / Unverified</td><td>Read-only index-status result</td><td>Invalid indexes may not be used as expected</td></tr>
+<tr><td>Restore has been tested</td><td>Verified / Configured / Unverified</td><td>Restore log with duration and owner</td><td>Backup existence alone does not prove recoverability</td></tr>
+</tbody></table></div>
+<p>This is where an AI-generated migration review becomes useful. A tool can flag a pattern. A human reviewer has to distinguish:</p>
+<ul><li>what the files prove;</li><li>what the configuration suggests;</li><li>what was demonstrated only in a development or replica environment;</li><li>what remains blocked or unverified.</li></ul>
+<h2>A practical go/no-go summary</h2>
+<p>Use this decision structure:</p>
+<ul><li><strong>Go:</strong> every critical item has evidence and the rollout gates are satisfied.</li><li><strong>Conditional go:</strong> only backward-compatible expand steps run now; later phases have separate gates.</li><li><strong>No-go:</strong> destructive cleanup, invalid data assumptions or recovery prerequisites remain unresolved.</li></ul>
+<p>For most multi-phase schema changes, “conditional go for the expand phase” is more realistic than approving the entire migration set at once.</p>
+<h2>What a static scanner cannot tell you</h2>
+<p>A file-only scanner can detect visible patterns such as:</p>
+<ul><li>destructive DDL;</li><li>non-concurrent indexes;</li><li><code>CREATE INDEX CONCURRENTLY</code> inside an explicit transaction;</li><li>constraints added without <code>NOT VALID</code>;</li><li>unqualified <code>UPDATE</code> or <code>DELETE</code>;</li><li>potentially volatile defaults.</li></ul>
+<p>It cannot determine:</p>
+<ul><li>actual table size or lock duration;</li><li>query plans;</li><li>application compatibility;</li><li>whether a runner adds its own transaction;</li><li>data-quality distribution;</li><li>backup integrity or restore success;</li><li>production traffic;</li><li>whether a later cleanup object is still used.</li></ul>
+<p>That limitation should be visible in the report. A review that says “the scanner found nothing” is not a release approval.</p>
+<h2>Final checklist</h2>
+<ul><li>Migration files are classified by expand, migrate, contract and destructive phases.</li><li>Old and new application versions were checked.</li><li>Lock and rewrite risks were evaluated against production-like data.</li><li>Concurrent index creation is outside transaction wrappers.</li><li>Existing-row constraints use an appropriate add/validate sequence.</li><li>Backfill is bounded, idempotent and reconciled.</li><li>Backup and restore evidence exists.</li><li>Stop conditions and rollback/forward-fix steps are documented.</li><li>The rollout was rehearsed with representative data.</li><li>Every material claim has a visible evidence state.</li></ul>
+<p>If several boxes are still unknown, the safer release decision is usually to split the migration rather than approve the whole bundle.</p>
+<h2>Related sample</h2>
+<p>Northstar Schema Labs publishes synthetic PostgreSQL migration review samples that show the evidence-table and go/no-go format without exposing customer data.</p>
+<ul><li>Current review service: https://www.upwork.com/services/product/2121960555841830491</li><li>Synthetic preflight sample: https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html</li></ul>
+<p>The linked evidence is educational. It is not a customer case study, production verification or guarantee of migration safety.</p>
+      </div>
+      <aside class="article-cta">
+        <p class="eyebrow">Review the evidence, not just the SQL</p>
+        <h2>Need a bounded PostgreSQL preflight?</h2>
+        <p>Start with a redacted scope. Do not send credentials, customer rows or production access.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="preflight.html">Run free browser scan</a>
+          <a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review on Upwork</a>
+          <a class="button secondary" href="sample-report.html">View synthetic report</a>
+        </div>
+      </aside>
+    </article>
+  </main>
+  <footer>
+    <p>Northstar Schema Labs is a working name. Content is educational and synthetic; no customer relationship, production verification, certification or revenue is claimed.</p>
+    <p>Static HTML · no analytics · no cookies · no form · no file intake</p>
+  </footer>
+</body>
+</html>

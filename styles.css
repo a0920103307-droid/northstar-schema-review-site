@@ -175,6 +175,8 @@ h3 { font-size: 1.06rem; margin: 0 0 .55rem; letter-spacing: -.015em; }
 .price-head strong { color: var(--ink); font-size: 1.8rem; letter-spacing: -.04em; }
 .price-card ul, .limit-columns ul { padding-left: 1.1rem; margin: 1rem 0 1.5rem; }
 .price-card .button { margin-top: auto; }
+.price-actions { display: grid; gap: .65rem; margin-top: auto; }
+.price-actions .button { margin-top: 0; }
 .limits { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; border-top: 1px solid var(--line); }
 .limit-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .warning { grid-column: 1 / -1; padding: 1rem; border-left: 3px solid var(--amber); color: #e7d7b3; background: rgba(255,199,105,.06); font-size: .9rem; }

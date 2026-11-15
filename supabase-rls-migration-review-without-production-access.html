@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="How to review Supabase RLS policies, grants, roles, security-definer functions and evidence states without claiming production verification.">
+  <title>Supabase RLS Migration Review Without Production Access | Northstar Schema Review</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="article.css">
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Local content preview — not deployed. Public inquiries use the contact paths on the main site; no customer data is collected here.
+  </div>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="writing.html">Guides</a>
+      <a href="index.html#scope">Scope</a>
+      <a href="preflight.html">Free preflight</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="https://www.upwork.com/services/product/2121960555841830491">Upwork</a>
+    </nav>
+  </header>
+  <main class="article-shell">
+    <a class="back-link" href="writing.html">← All technical guides</a>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">Supabase evidence guide</p>
+        <h1>Supabase RLS Migration Review Without Production Access</h1>
+        <p class="lede">Technical education for teams preparing a production migration. This is not a safety guarantee or a substitute for staging validation and qualified human review.</p>
+      </header>
+      <div class="article-body">
+        <h2>What RLS actually depends on</h2>
+<p>Row Level Security is not a single toggle. The effective access decision can depend on:</p>
+<ol><li>Which schema is exposed through the Data API.</li><li>Which roles have object and function grants.</li><li>Whether RLS is enabled on each exposed table.</li><li>Which policies exist for <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code>.</li><li>How tenant, user and organization identity is derived.</li><li>Whether a policy uses trusted claims or user-editable metadata.</li><li>Whether <code>SECURITY DEFINER</code> functions safely control search path and execution rights.</li><li>Whether Storage and Edge Functions enforce equivalent rules.</li><li>Which database role the deployed application actually uses.</li><li>Whether tests exercise both allowed and denied access paths.</li></ol>
+<p>Supabase&#x27;s <a href="https://supabase.com/docs/guides/database/postgres/row-level-security">Row Level Security guide</a> and <a href="https://supabase.com/docs/guides/security/production-checklist">production security checklist</a> are useful starting points. A migration review still has to connect those recommendations to this application&#x27;s actual schema and roles.</p>
+<h2>1. Confirm the exposed schemas and grants</h2>
+<p>Start with the API boundary.</p>
+<p>Request evidence that shows:</p>
+<ul><li>exposed schemas;</li><li>table and sequence grants for each client-facing role;</li><li>function grants;</li><li>whether <code>anon</code>, <code>authenticated</code> or another role has broader access than intended;</li><li>whether administrative schemas are excluded from the API.</li></ul>
+<p>Do not infer that a table is private merely because the frontend does not display it. The API boundary is determined by database privileges, schema exposure and policy behavior.</p>
+<h2>2. Verify RLS is enabled on every relevant table</h2>
+<p>One missing <code>ENABLE ROW LEVEL SECURITY</code> can change the result.</p>
+<p>The review should distinguish:</p>
+<ul><li>RLS enabled with a policy;</li><li>RLS enabled with no policy;</li><li>RLS disabled;</li><li>RLS enabled but bypassed by the role used by a function or service.</li></ul>
+<p>Supabase&#x27;s advisor documentation includes dedicated checks such as RLS disabled in a public schema and RLS enabled without policies. See the <a href="https://supabase.com/docs/guides/observability/advisors">Supabase advisors guide</a>.</p>
+<h2>3. Review policy coverage by operation</h2>
+<p>A policy for <code>SELECT</code> does not automatically provide a safe <code>UPDATE</code> policy, and a policy that restricts tenant visibility does not automatically protect function execution or Storage.</p>
+<p>For each table, verify:</p>
+<ul><li>read policy;</li><li>insert policy;</li><li>update policy;</li><li>delete policy;</li><li><code>USING</code> expression;</li><li><code>WITH CHECK</code> expression;</li><li>whether the role can bypass RLS.</li></ul>
+<p>An <code>UPDATE</code> policy with a restrictive <code>USING</code> clause but a weak <code>WITH CHECK</code> clause may allow a row to move into a tenant the user should not control.</p>
+<h2>4. Trace identity to a trusted source</h2>
+<p>Policies commonly use an authenticated user ID, organization membership table or JWT claim.</p>
+<p>Ask:</p>
+<ul><li>Can the user edit the value used for authorization?</li><li>Is user metadata being treated as an authorization source?</li><li>Does organization membership come from a protected table?</li><li>Does a stale or missing membership fail closed?</li><li>Can one user create a membership for another tenant?</li><li>Is service-role access kept outside client paths?</li></ul>
+<p>Supabase explicitly warns that some user metadata can be updated by the authenticated user. Authorization should not rely on a field the user can change.</p>
+<h2>5. Review <code>SECURITY DEFINER</code> functions</h2>
+<p>A policy can be correct while an exposed function bypasses it.</p>
+<p>For every security-definer function, request:</p>
+<ul><li>owner;</li><li><code>SECURITY DEFINER</code> status;</li><li>explicit or trusted <code>search_path</code>;</li><li>execute grants;</li><li>input validation;</li><li>tenant checks;</li><li>whether the function returns rows from multiple tenants;</li><li>whether the function can perform writes that the caller could not perform directly.</li></ul>
+<p>The Supabase advisor set includes checks for mutable function search paths and anonymously or authenticated-executable security-definer functions. That is evidence of why function review belongs in the same scope as RLS policy review.</p>
+<h2>6. Treat Storage policies as a separate authorization surface</h2>
+<p>Database table policies do not automatically secure Storage objects.</p>
+<p>Review:</p>
+<ul><li>bucket visibility;</li><li>object path convention;</li><li>tenant and user ownership encoded in the path;</li><li>select/upload/update/delete policies;</li><li>public versus private bucket choice;</li><li>whether a user can list another tenant&#x27;s folder;</li><li>whether replacing an object can bypass an upload policy.</li></ul>
+<p>If Storage is in scope, request its policy SQL and sanitized configuration evidence. Do not mark storage access as verified from table policies alone.</p>
+<h2>7. Review policy performance with representative scale</h2>
+<p>A policy can be secure and still be a performance problem.</p>
+<p>Questions:</p>
+<ul><li>Are columns used in policy predicates indexed?</li><li>Does the policy evaluate stable auth context efficiently?</li><li>Does a nested membership lookup run once or per row?</li><li>Are multiple permissive policies combined in a way that causes repeated work?</li><li>Is the issue demonstrated in a production-like dataset or inferred from policy text?</li></ul>
+<p>Supabase documents RLS performance practices and advisor checks for issues such as missing indexes. Performance conclusions should still be labelled <code>Configured</code>, <code>Replica-only</code> or <code>Unverified</code> until tested at representative scale.</p>
+<h2>8. Test both allow and deny</h2>
+<p>A policy that allows the correct user path is not enough.</p>
+<p>The test matrix should include:</p>
+<ul><li>user in the correct tenant;</li><li>authenticated user in another tenant;</li><li>user with no membership;</li><li>anonymous request;</li><li>stale membership;</li><li>service-role path;</li><li>storage access;</li><li>security-definer function;</li><li>update that attempts to change tenant ownership;</li><li>insert with a forged tenant identifier.</li></ul>
+<p>The deliverable should record which tests were executed and which remain blocked.</p>
+<h2>9. Do not confuse RLS with complete application security</h2>
+<p>RLS protects row access in PostgreSQL. It does not automatically address:</p>
+<ul><li>secrets in client code;</li><li>overly broad API keys;</li><li>unsafe Edge Function authorization;</li><li>payment logic;</li><li>file upload malware;</li><li>CSRF or browser security;</li><li>backup access;</li><li>production role drift;</li><li>a penetration-test finding.</li></ul>
+<p>A narrow RLS review should state these exclusions clearly rather than imply complete platform security.</p>
+<h2>10. Use an evidence table</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Claim</th><th>Evidence state</th><th>Required evidence</th><th>Why it remains uncertain</th></tr></thead>
+<tbody>
+<tr><td>RLS is enabled on all exposed tables</td><td>Verified / Unverified</td><td>Sanitized catalog query or migration definitions</td><td>A later dashboard change may differ from migration state</td></tr>
+<tr><td>No client role can bypass RLS</td><td>Verified / Unverified</td><td>Role, grants and application connection evidence</td><td>A function or service path may use a different role</td></tr>
+<tr><td>Tenant membership cannot be self-created</td><td>Configured / Verified / Unverified</td><td>Policies, triggers, function checks and tests</td><td>Policy text alone may not cover every write path</td></tr>
+<tr><td>Storage is tenant-isolated</td><td>Verified / Replica-only / Unverified</td><td>Bucket and storage policy evidence plus deny tests</td><td>Table policies do not secure object paths</td></tr>
+<tr><td>The deployed application uses the expected role</td><td>Unverified / Blocked</td><td>Sanitized session or provider evidence</td><td>Repository configuration may not reflect the deployed process</td></tr>
+</tbody></table></div>
+<p>This evidence discipline is more useful than a binary “secure” or “insecure” label.</p>
+<h2>What a file-only review can deliver</h2>
+<ul><li>an inventory of tables, policies and grants supplied;</li><li>a gap analysis by operation and role;</li><li>policy and function patterns that require attention;</li><li>a deny-path test matrix;</li><li>a distinction between confirmed, configured, replica-only and unverified claims;</li><li>prioritized remediation questions;</li><li>a go/no-go or conditional-go decision for the reviewed scope.</li></ul>
+<p>It cannot deliver a penetration-test certificate, guarantee tenant isolation, inspect live production sessions or prove that no dashboard drift exists.</p>
+<h2>Final checklist</h2>
+<ul><li>Exposed schemas and grants are known.</li><li>RLS status is known for every in-scope table.</li><li>Every client operation has an intended policy path.</li><li>Authorization identity comes from a trusted source.</li><li><code>SECURITY DEFINER</code> functions are reviewed.</li><li>Storage and Edge Function boundaries are either reviewed or explicitly excluded.</li><li>Policy columns have a performance review.</li><li>Allow and deny cases are tested.</li><li>Functional and non-functional claims have an evidence state.</li><li>Production role and runtime behavior are marked unverified until evidenced.</li></ul>
+<p>The safest conclusion is often narrower than the buyer expects: what the supplied artifacts prove, what they merely configure, and what still needs a controlled runtime test.</p>
+<h2>Related sample</h2>
+<ul><li>Read-only evidence-review format: https://www.upwork.com/services/product/2121960555841830491</li><li>Synthetic report sample: https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html</li></ul>
+<p>These are educational and synthetic materials, not a real customer case or security certification.</p>
+      </div>
+      <aside class="article-cta">
+        <p class="eyebrow">Review the evidence, not just the SQL</p>
+        <h2>Need a bounded PostgreSQL preflight?</h2>
+        <p>Start with a redacted scope. Do not send credentials, customer rows or production access.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="preflight.html">Run free browser scan</a>
+          <a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review on Upwork</a>
+          <a class="button secondary" href="sample-report.html">View synthetic report</a>
+        </div>
+      </aside>
+    </article>
+  </main>
+  <footer>
+    <p>Northstar Schema Labs is a working name. Content is educational and synthetic; no customer relationship, production verification, certification or revenue is claimed.</p>
+    <p>Static HTML · no analytics · no cookies · no form · no file intake</p>
+  </footer>
+</body>
+</html>
