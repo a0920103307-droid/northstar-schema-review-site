@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://a0920103307-droid.github.io/northstar-schema-review-site/sitemap.xml
