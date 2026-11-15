@@ -4,7 +4,6 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
   const SEVERITY_RANK = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
-  const SEVERITY_WEIGHT = { critical: 40, high: 20, medium: 8, low: 2, info: 0 };
 
   function readDollarTag(text, index) {
     if (text[index] !== "$") return null;
@@ -150,18 +149,16 @@
       if (transition === "begin") inTransaction = true;
       if (transition === "end") inTransaction = false;
     }
-    return findings.sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] || a.line - b.line || a.ruleId.localeCompare(b.ruleId));
+    return findings.sort((a, b) => SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity] || a.line - b.line || a.ruleId.localeCompare(b.ruleId));
   }
 
   function summarize(findings) {
     const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
-    let riskScore = 0;
     for (const finding of findings) {
       counts[finding.severity] += 1;
-      riskScore += SEVERITY_WEIGHT[finding.severity] || 0;
     }
     const status = counts.critical ? "BLOCK" : counts.high ? "REVIEW" : counts.medium ? "CAUTION" : "NO_AUTOMATED_FINDINGS";
-    return { counts, riskScore: Math.min(100, riskScore), status };
+    return { counts, status };
   }
 
   return { stripSqlComments, splitSqlStatements, scanSql, summarize };

@@ -89,7 +89,7 @@ button.button { font: inherit; cursor: pointer; }
 .tool-empty-state p, .tool-empty-state li { color: var(--muted); font-size: .9rem; }
 .tool-empty-state ul { padding-left: 1.1rem; }
 .tool-results { margin-bottom: 5rem; padding: 1.5rem; scroll-margin-top: 1rem; }
-.summary-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: .6rem; margin-top: 1.4rem; }
+.summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .6rem; margin-top: 1.4rem; }
 .summary-card {
   min-width: 0;
   padding: .9rem;

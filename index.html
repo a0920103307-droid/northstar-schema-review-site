@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="File-only PostgreSQL migration preflight for small SaaS teams. Request a pilot review by email before production without sharing database credentials.">
+  <meta name="description" content="AI-assisted, file-only PostgreSQL migration checklist for small SaaS teams. Request a pilot with a redacted summary; file intake and checkout are not enabled.">
   <title>Northstar Schema Review — PostgreSQL migration preflight</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -31,10 +31,10 @@
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">PostgreSQL preflight · file-only</p>
-        <h1>Catch the migration that can ruin launch day.</h1>
-        <p class="lede">A focused review of data-loss, lock, rewrite, compatibility, transaction, and rollback hazards before your migration reaches production.</p>
+        <h1>AI-assisted PostgreSQL migration checklist.</h1>
+        <p class="lede">A preliminary checklist using heuristic rules and AI-assisted context notes to flag possible migration issues. It may miss or misstate hazards; it is not an engineering review, production approval, or guarantee against downtime or data loss.</p>
         <div class="hero-actions">
-          <a class="button primary" href="#scope">See what is reviewed</a>
+          <a class="button primary" href="#scope">See what is included</a>
           <a class="button primary" href="preflight.html">Run free browser scan</a>
           <a class="button secondary" href="sample-report.html">View sample report</a>
         </div>
@@ -65,17 +65,17 @@
     </section>
 
     <section class="strip" aria-label="Offer attributes">
-      <div><strong>24–48h</strong><span>target after complete scope</span></div>
+      <div><strong>Pilot</strong><span>timing confirmed before acceptance</span></div>
       <div><strong>File-only</strong><span>no DB connection</span></div>
-      <div><strong>Human-reviewed</strong><span>scan plus judgment</span></div>
+      <div><strong>AI-assisted</strong><span>heuristic signals + context notes</span></div>
       <div><strong>Fixed scope</strong><span>no open-ended audit</span></div>
     </section>
 
     <section id="scope" class="section two-col">
       <div>
-        <p class="eyebrow">What gets reviewed</p>
-        <h2>Not a generic code audit. A release decision for the migration.</h2>
-        <p>The review focuses on the failure modes that often survive unit tests but appear when a schema change meets real row counts, traffic, and a rolling deployment.</p>
+        <p class="eyebrow">Checklist scope</p>
+        <h2>A focused preliminary checklist for one migration.</h2>
+        <p>This checklist organizes possible text-pattern signals and questions to take to a qualified engineer. It cannot inspect production rows, traffic, or application behavior.</p>
       </div>
       <div class="check-grid">
         <article><span>01</span><h3>Data loss</h3><p>Drops, destructive cleanup, unsafe backfills, and irreversible final steps.</p></article>
@@ -83,7 +83,7 @@
         <article><span>03</span><h3>Compatibility</h3><p>Expand/contract ordering, old application versions, renames, and nullable transitions.</p></article>
         <article><span>04</span><h3>Transaction fit</h3><p>Concurrent-index wrappers, enum behavior, migration-runner assumptions, and ordering.</p></article>
         <article><span>05</span><h3>Rollback</h3><p>Restore versus forward-fix choices, verification points, and stop conditions.</p></article>
-        <article><span>06</span><h3>Evidence</h3><p>File and line references, confidence, and concrete next steps for a human reviewer.</p></article>
+        <article><span>06</span><h3>Evidence</h3><p>File and line references, confidence, and questions for your engineer to verify.</p></article>
       </div>
     </section>
 
@@ -91,23 +91,23 @@
       <p class="eyebrow">How it works</p>
       <h2>Small intake. Concrete output.</h2>
       <div class="steps">
-        <article><span class="step-number">1</span><h3>Scope</h3><p>Send a redacted migration set, framework, PostgreSQL version, deployment approach, approximate table scale, and launch date.</p></article>
-        <article><span class="step-number">2</span><h3>Preflight</h3><p>Run the deterministic scanner, inspect the migration order, and separate confirmed hazards from context-dependent risks.</p></article>
-        <article><span class="step-number">3</span><h3>Review pack</h3><p>Receive findings, priorities, safe sequencing direction, rollback checks, and open questions to test in staging.</p></article>
+        <article><span class="step-number">1</span><h3>Scope</h3><p>Email a short, redacted scope summary first. Do not attach SQL files while secure file intake is disabled.</p></article>
+        <article><span class="step-number">2</span><h3>Preflight</h3><p>Use heuristic checks and AI-assisted explanations to organize possible issues. The scanner may miss or misstate hazards and has not been runtime-validated.</p></article>
+        <article><span class="step-number">3</span><h3>Checklist pack</h3><p>Receive possible findings, source links, and questions to verify with a qualified engineer and in staging. This is not a release decision.</p></article>
       </div>
     </section>
 
     <section id="pricing" class="section pricing">
       <div class="pricing-copy">
         <p class="eyebrow">Pilot offer</p>
-        <h2>One migration. One clear release review.</h2>
+        <h2>One migration. One clear preliminary checklist.</h2>
         <p>Pricing is a pilot hypothesis, not a claim of market validation. Final scope must be accepted before any payment.</p>
       </div>
       <div class="price-card featured">
-        <div class="price-head"><span>Single migration review</span><strong>USD 49</strong></div>
+        <div class="price-head"><span>Single migration checklist</span><strong>USD 49</strong></div>
         <ul>
           <li>Up to 20 SQL files or 1,000 lines</li>
-          <li>48-hour target after complete intake</li>
+          <li>Timing confirmed before acceptance</li>
           <li>Markdown issue report</li>
           <li>One written clarification round</li>
           <li>File-only delivery</li>
@@ -115,13 +115,13 @@
         <a class="button primary" href="mailto:A0920103307@gmail.com?subject=Northstar%20Schema%20Review%20pilot%20inquiry&amp;body=Hi%20Northstar%2C%0A%0AI%27d%20like%20a%20pilot%20migration%20review.%0A%0ASQL%20file%20count%3A%0APostgreSQL%20version%3A%0ADeployment%20approach%3A%0AApproximate%20table%20scale%3A%0ALaunch%20date%3A%0A%0AI%20have%20not%20included%20credentials%2C%20customer%20data%2C%20or%20a%20database%20connection.%0A">Start a pilot inquiry</a>
       </div>
       <div class="price-card">
-        <div class="price-head"><span>Launch review</span><strong>USD 149</strong></div>
+        <div class="price-head"><span>Launch-prep checklist</span><strong>USD 149</strong></div>
         <ul>
           <li>Up to 75 SQL files or 5,000 lines</li>
-          <li>24–48 hour target after complete intake</li>
-          <li>Prioritized findings and rollout notes</li>
+          <li>Timing confirmed after scope review</li>
+          <li>Prioritized heuristic signals and rollout questions</li>
           <li>Rollback checklist</li>
-          <li>30-minute written Q&amp;A scope</li>
+          <li>One AI-assisted written clarification round; no engineer sign-off</li>
         </ul>
       </div>
     </section>
@@ -136,7 +136,7 @@
           <h3>Included</h3>
           <ul>
             <li>PostgreSQL SQL and schema text</li>
-            <li>Rule-based evidence plus human interpretation</li>
+            <li>Rule-based signals with AI-assisted explanations; no human engineering sign-off</li>
             <li>Deployment and rollback questions</li>
             <li>Synthetic or redacted samples</li>
           </ul>
@@ -156,7 +156,7 @@
 
     <section id="contact" class="section final-cta">
       <p class="eyebrow">Pilot inquiry</p>
-      <h2>Bring one migration. Get a clear release review.</h2>
+      <h2>Get a preliminary migration checklist.</h2>
       <p>Email a short, redacted summary with SQL file count, PostgreSQL version, deployment approach, approximate table scale, and launch date. Checkout and file intake remain disabled.</p>
       <p class="contact-address">Pilot inquiries: <a href="mailto:A0920103307@gmail.com?subject=Northstar%20Schema%20Review%20pilot%20inquiry&amp;body=Hi%20Northstar%2C%0A%0AI%27d%20like%20a%20pilot%20migration%20review.%0A%0ASQL%20file%20count%3A%0APostgreSQL%20version%3A%0ADeployment%20approach%3A%0AApproximate%20table%20scale%3A%0ALaunch%20date%3A%0A%0AI%20have%20not%20included%20credentials%2C%20customer%20data%2C%20or%20a%20database%20connection.%0A">A0920103307@gmail.com</a></p>
       <a class="button primary" href="mailto:A0920103307@gmail.com?subject=Northstar%20Schema%20Review%20pilot%20inquiry&amp;body=Hi%20Northstar%2C%0A%0AI%27d%20like%20a%20pilot%20migration%20review.%0A%0ASQL%20file%20count%3A%0APostgreSQL%20version%3A%0ADeployment%20approach%3A%0AApproximate%20table%20scale%3A%0ALaunch%20date%3A%0A%0AI%20have%20not%20included%20credentials%2C%20customer%20data%2C%20or%20a%20database%20connection.%0A">Email a pilot inquiry</a>
@@ -171,4 +171,3 @@
   </footer>
 </body>
 </html>
-

@@ -31,8 +31,8 @@
     <section class="tool-hero">
       <div>
         <p class="eyebrow">Free tool · PostgreSQL · browser-only</p>
-        <h1>Check the migration before it reaches production.</h1>
-        <p class="lede">Paste PostgreSQL schema or migration SQL. The scanner highlights destructive changes, lock and rewrite hazards, transaction problems, compatibility risks, and rollback blind spots. Nothing is uploaded.</p>
+        <h1>Experimental PostgreSQL migration text scan.</h1>
+        <p class="lede">Paste PostgreSQL schema or migration SQL. This small experimental rule set may miss or misstate hazards. Its output is not an engineering review, release approval, or safety guarantee. Nothing is uploaded.</p>
       </div>
       <aside class="privacy-card" aria-label="Privacy boundary">
         <span class="privacy-mark" aria-hidden="true">LOCAL</span>
@@ -64,8 +64,8 @@
 
       <aside id="empty-state" class="tool-empty-state" aria-live="polite">
         <p class="eyebrow">Result</p>
-        <h2>Evidence for a human review</h2>
-        <p>The scan returns rule-based signals, not a safety certificate. Table size, write rate, locks, application compatibility, and rollback success require staging evidence.</p>
+        <h2>Signals for a qualified engineer to verify</h2>
+        <p>The scan returns a small set of rule-based signals. It cannot inspect table size, write rate, real lock behavior, application compatibility, or rollback success. Verify findings with a qualified engineer and representative staging data.</p>
         <ul>
           <li>No automated upload</li>
           <li>No database connection</li>
@@ -84,7 +84,6 @@
       </div>
       <div class="summary-grid">
         <div class="summary-card status-card-result"><span>Status</span><strong id="result-status" data-status="BLOCK">Block</strong></div>
-        <div class="summary-card"><span>Heuristic risk</span><strong id="result-risk">0 / 100</strong></div>
         <div class="summary-card"><span>Critical</span><strong id="count-critical">0</strong></div>
         <div class="summary-card"><span>High</span><strong id="count-high">0</strong></div>
         <div class="summary-card"><span>Medium</span><strong id="count-medium">0</strong></div>
@@ -130,4 +129,3 @@
   <script src="preflight.js" defer></script>
 </body>
 </html>
-

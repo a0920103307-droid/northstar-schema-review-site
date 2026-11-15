@@ -9,7 +9,7 @@
   <style>
     .report-wrap { max-width: 1040px; margin: 0 auto; padding: 4rem 1.25rem 6rem; }
     .report-head { padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
-    .report-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-top: 1.5rem; }
+    .report-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 1.5rem; }
     .report-meta div { padding: 1rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--panel); }
     .report-meta span, .find-card small { display: block; color: var(--muted); font-size: .78rem; }
     .report-meta strong { display: block; font-size: 1.35rem; margin-top: .2rem; }
@@ -31,12 +31,11 @@
     <header class="report-head">
       <p class="eyebrow">Synthetic sample · not customer data</p>
       <h1 style="font-size:clamp(2.5rem,7vw,5rem);max-width:12ch">Migration preflight report</h1>
-      <p class="lede">Illustrative output for three synthetic PostgreSQL migration files. It demonstrates evidence and review structure, not a claim that any real deployment is safe.</p>
+      <p class="lede">Illustrative output for three synthetic PostgreSQL migration files. It shows pattern signals and verification questions, not a claim that any real deployment is safe.</p>
       <div class="report-meta">
-        <div><span>Automated status</span><strong style="color:var(--red)">BLOCK</strong></div>
+        <div><span>Heuristic signal</span><strong style="color:var(--red)">Critical patterns</strong></div>
         <div><span>Files</span><strong>3</strong></div>
         <div><span>Findings</span><strong>7</strong></div>
-        <div><span>Risk score</span><strong>100 / 100</strong></div>
       </div>
     </header>
 

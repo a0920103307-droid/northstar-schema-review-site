@@ -10,7 +10,6 @@
   const emptyState = document.getElementById("empty-state");
   const results = document.getElementById("results");
   const status = document.getElementById("result-status");
-  const risk = document.getElementById("result-risk");
   const countCritical = document.getElementById("count-critical");
   const countHigh = document.getElementById("count-high");
   const countMedium = document.getElementById("count-medium");
@@ -25,19 +24,19 @@
 
   function statusLabel(value) {
     return ({
-      BLOCK: "Block",
-      REVIEW: "Review required",
-      CAUTION: "Caution",
-      NO_AUTOMATED_FINDINGS: "No automated findings"
+      BLOCK: "Critical patterns detected",
+      REVIEW: "High-priority patterns detected",
+      CAUTION: "Medium-priority patterns detected",
+      NO_AUTOMATED_FINDINGS: "No automated patterns matched"
     })[value] || value;
   }
 
   function explainStatus(value) {
     return ({
-      BLOCK: "At least one critical pattern needs to be redesigned or verified before deployment.",
-      REVIEW: "No critical pattern was detected, but high-risk changes need human review and staging evidence.",
-      CAUTION: "Only medium-risk patterns were detected. This is not a release approval.",
-      NO_AUTOMATED_FINDINGS: "No pattern from this scanner matched. This does not mean the migration is safe."
+      BLOCK: "The scanner matched a critical pattern. Verify it with a qualified engineer and staging evidence.",
+      REVIEW: "The scanner matched a high-severity pattern. This is not a release approval.",
+      CAUTION: "The scanner matched medium-severity patterns. This is not a release approval.",
+      NO_AUTOMATED_FINDINGS: "No pattern from this small rule set matched. That does not mean the migration is safe."
     })[value];
   }
 
@@ -55,7 +54,6 @@
     results.hidden = false;
     status.textContent = statusLabel(summary.status);
     status.dataset.status = summary.status;
-    risk.textContent = `${summary.riskScore} / 100`;
     countCritical.textContent = summary.counts.critical;
     countHigh.textContent = summary.counts.high;
     countMedium.textContent = summary.counts.medium;
@@ -110,8 +108,7 @@
     if (!currentSummary) return "";
     const lines = [
       "Northstar Schema Review - browser preflight",
-      `Automated status: ${statusLabel(currentSummary.status)}`,
-      `Risk score: ${currentSummary.riskScore}/100`,
+      `Heuristic status (not release approval): ${statusLabel(currentSummary.status)}`,
       `Findings: ${currentFindings.length} (critical ${currentSummary.counts.critical}, high ${currentSummary.counts.high}, medium ${currentSummary.counts.medium})`,
       "",
       "This is a static browser scan, not a safety guarantee.",
