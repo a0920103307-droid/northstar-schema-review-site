@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Synthetic Supabase SECURITY DEFINER and RLS review sample showing tenant-isolation tests, grants, function identity, evidence states, and remediation gates.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Northstar Schema Review">
+  <meta property="og:title" content="Synthetic Supabase SECURITY DEFINER & RLS Review">
+  <meta property="og:description" content="A file-only review sample built around two synthetic identities, explicit evidence states, and a fail-closed launch decision.">
+  <meta property="og:url" content="https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Synthetic Supabase SECURITY DEFINER & RLS Review">
+  <meta name="twitter:description" content="A file-only review sample built around two synthetic identities, explicit evidence states, and a fail-closed launch decision.">
+  <title>Supabase SECURITY DEFINER &amp; RLS Review Sample | Northstar Schema Review</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="article.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Synthetic Supabase SECURITY DEFINER and RLS Review",
+    "description": "A synthetic file-only review sample covering grants, function identity, RLS bypass paths, PostgREST RPC behavior, and cross-user tests.",
+    "datePublished": "2026-11-16",
+    "dateModified": "2026-11-16",
+    "mainEntityOfPage": "https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html",
+    "author": {
+      "@type": "Organization",
+      "name": "Northstar Schema Labs (working name)"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Published synthetic sample · no client data, production verification, or security certification
+  </div>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="writing.html">Guides</a>
+      <a href="index.html#scope">Scope</a>
+      <a href="preflight.html">Free preflight</a>
+      <a href="sample-report.html">Migration sample</a>
+      <a href="https://www.upwork.com/services/product/2121960555841830491">Upwork</a>
+    </nav>
+  </header>
+
+  <main class="article-shell">
+    <a class="back-link" href="writing.html">← All technical guides</a>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">Synthetic work sample · Supabase authorization</p>
+        <h1>SECURITY DEFINER &amp; RLS review</h1>
+        <p class="lede">A narrow pre-launch sample that traces caller identity, function ownership, grants, RLS bypass paths, PostgREST RPC behavior, and cross-user tests using two synthetic identities.</p>
+      </header>
+
+      <div class="article-body">
+        <blockquote>
+          <p><strong>Sample decision: request changes.</strong> The supplied artifacts do not yet prove that User A cannot read, modify, or authorize access to User B's data through either the table API or an exposed RPC function.</p>
+        </blockquote>
+
+        <div class="sample-meta" aria-label="Synthetic sample attributes">
+          <div><span>Evidence type</span><strong>Synthetic</strong></div>
+          <div><span>Production access</span><strong>None</strong></div>
+          <div><span>Decision</span><strong>Request changes</strong></div>
+        </div>
+
+        <h2>Review principle</h2>
+        <p>Correct table RLS does not automatically secure an exposed <code>SECURITY DEFINER</code> function. The review must trace the caller identity, function owner, search path, execution grants, input handling, accessed rows, and the role used by the deployed request path.</p>
+
+        <h2>Synthetic test matrix</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Test</th><th>Attacker input</th><th>Expected evidence</th><th>Sample result</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>01</strong> Table SELECT</td><td>Synthetic User A requests User B's tenant row.</td><td>Zero rows or authorization error; no server-side cross-tenant read.</td><td>Pass / fail / blocked</td></tr>
+              <tr><td><strong>02</strong> Table UPDATE</td><td>User A submits B's object ID and changes a protected field.</td><td>No row changed; API error; state and logs retained.</td><td>Pass / fail / blocked</td></tr>
+              <tr><td><strong>03</strong> User ID spoof</td><td>User A calls an RPC whose security-definer function accepts a user ID parameter.</td><td>The function derives caller identity from trusted auth context or verifies the supplied ID.</td><td>Pass / fail / blocked</td></tr>
+              <tr><td><strong>04</strong> EXECUTE grants</td><td>Compare <code>anon</code>, <code>authenticated</code>, <code>service_role</code>, <code>PUBLIC</code>, and unexpected roles.</td><td>Effective grants are least privilege; <code>PUBLIC</code> does not expose privileged execution.</td><td>Verified / request changes</td></tr>
+              <tr><td><strong>05</strong> Search path and owner</td><td>Challenge function resolution with ambiguous or hostile schema context.</td><td>Explicit trusted search path; owner and dependencies do not widen caller access.</td><td>Verified / request changes</td></tr>
+              <tr><td><strong>06</strong> Regression test</td><td>Assess the remediation test through direct REST and RPC deny paths.</td><td>Regression fails closed after a representative policy or grant change.</td><td>Verified / blocked</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Evidence required before an approve decision</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Required evidence</th><th>Why file text alone is not enough</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Sanitized role used by the deployed request path</td><td>A migration label does not prove which role the application or RPC call actually assumes.</td></tr>
+              <tr><td>Actual function owner, grants, memberships, and search path</td><td><code>SECURITY DEFINER</code> changes privilege context, so ownership and execution grants are part of the attack surface.</td></tr>
+              <tr><td>Two isolated synthetic accounts and a controlled test environment</td><td>Cross-user authorization must be challenged through the actual table and RPC interface.</td></tr>
+              <tr><td>Regression-test result plus a post-fix retest</td><td>A remediation that passed once must fail closed when the authorization assumption changes.</td></tr>
+              <tr><td>No production-user content in logs, screenshots, or exports</td><td>The reviewer must demonstrate the deny path without reading or retaining real private content.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Deliverables</h2>
+        <ol>
+          <li>Severity-ranked findings with reproducible request/response evidence.</li>
+          <li>Critical or high launch blockers.</li>
+          <li>Specific remediation direction.</li>
+          <li>A focused retest of agreed fixes.</li>
+          <li>A clear conclusion for the reviewed scope, with every item that remains unverified.</li>
+        </ol>
+
+        <h2>Scope boundary</h2>
+        <p>This synthetic sample is not a client case, penetration test, compliance audit, production approval, or security certification. It does not claim that any real application is secure. A real engagement must use only client-authorized synthetic accounts and controlled evidence.</p>
+      </div>
+
+      <aside class="article-cta">
+        <p class="eyebrow">Need a bounded authorization review?</p>
+        <h2>Start with sanitized policy and function evidence.</h2>
+        <p>Send redacted schema, grants, policies, and function definitions. Do not send credentials, customer rows, backups, or production access.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review on Upwork</a>
+          <a class="button secondary" href="supabase-rls-migration-review-without-production-access.html">Read the RLS guide</a>
+          <a class="button secondary" href="preflight.html">Run the free scanner</a>
+        </div>
+      </aside>
+    </article>
+  </main>
+
+  <footer>
+    <p>Northstar Schema Labs is a working name. This sample is synthetic and educational; no customer relationship, production verification, certification, or revenue is claimed.</p>
+    <p>Static HTML · no analytics · no cookies · no form · no file intake</p>
+  </footer>
+</body>
+</html>
