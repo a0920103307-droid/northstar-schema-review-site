@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Sample migration preflight report</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .report-wrap { max-width: 1040px; margin: 0 auto; padding: 4rem 1.25rem 6rem; }
+    .report-head { padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+    .report-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-top: 1.5rem; }
+    .report-meta div { padding: 1rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--panel); }
+    .report-meta span, .find-card small { display: block; color: var(--muted); font-size: .78rem; }
+    .report-meta strong { display: block; font-size: 1.35rem; margin-top: .2rem; }
+    .find-card { margin-top: 1rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: .8rem; background: rgba(14,29,25,.8); }
+    .find-card.critical { border-left: 4px solid var(--red); }
+    .find-card.high { border-left: 4px solid var(--amber); }
+    .find-card.medium { border-left: 4px solid var(--blue); }
+    .find-card h3 { margin: .3rem 0 .6rem; }
+    .label { color: var(--muted); font-size: .8rem; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+    code { color: var(--mint-2); }
+    pre { overflow-x: auto; padding: 1rem; border-radius: .7rem; background: #06100d; }
+    .back { display: inline-flex; margin-bottom: 2rem; color: var(--muted); text-decoration: none; }
+    @media (max-width: 720px) { .report-meta { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="report-wrap">
+    <a class="back" href="index.html">← Back to service overview</a>
+    <header class="report-head">
+      <p class="eyebrow">Synthetic sample · not customer data</p>
+      <h1 style="font-size:clamp(2.5rem,7vw,5rem);max-width:12ch">Migration preflight report</h1>
+      <p class="lede">Illustrative output for three synthetic PostgreSQL migration files. It demonstrates evidence and review structure, not a claim that any real deployment is safe.</p>
+      <div class="report-meta">
+        <div><span>Automated status</span><strong style="color:var(--red)">BLOCK</strong></div>
+        <div><span>Files</span><strong>3</strong></div>
+        <div><span>Findings</span><strong>7</strong></div>
+        <div><span>Risk score</span><strong>100 / 100</strong></div>
+      </div>
+    </header>
+
+    <section>
+      <p class="eyebrow" style="margin-top:3rem">Prioritized findings</p>
+      <article class="find-card critical">
+        <span class="label">Critical · MIG001 · 002_risky_release.sql:2</span>
+        <h3>Table drop can cause irreversible data loss</h3>
+        <p><code>DROP TABLE legacy_orders;</code></p>
+        <p><strong>Why it matters:</strong> Rows disappear immediately and previous application versions may still depend on the table.</p>
+        <p><strong>Direction:</strong> Use a monitored deprecation window, verify restore, search application dependencies, then remove in a separate final migration.</p>
+      </article>
+      <article class="find-card critical">
+        <span class="label">Critical · MIG003 · 002_risky_release.sql:4</span>
+        <h3>Column drop can cause irreversible data loss</h3>
+        <p><code>ALTER TABLE customers DROP COLUMN old_phone;</code></p>
+        <p><strong>Why it matters:</strong> Column data disappears and old application instances may still query it.</p>
+        <p><strong>Direction:</strong> Stop reads and writes first, retain compatibility through an additional release, verify backups, and split the final removal.</p>
+      </article>
+      <article class="find-card high">
+        <span class="label">High · MIG015 · 003_transaction_hazard.sql:4</span>
+        <h3>CREATE INDEX CONCURRENTLY cannot run inside a transaction block</h3>
+        <p><code>BEGIN; CREATE INDEX CONCURRENTLY …; COMMIT;</code></p>
+        <p><strong>Why it matters:</strong> PostgreSQL rejects this statement in an explicit transaction; common migration runners may add one automatically.</p>
+        <p><strong>Direction:</strong> Put it in a dedicated non-transactional migration and verify the resulting index is valid.</p>
+      </article>
+      <article class="find-card high">
+        <span class="label">High · MIG009 · 002_risky_release.sql:6</span>
+        <h3>Adding NOT NULL without a value/default may fail on existing rows</h3>
+        <p><code>ALTER TABLE orders ADD COLUMN tenant_id uuid NOT NULL;</code></p>
+        <p><strong>Direction:</strong> Add nullable, backfill in validated batches, then apply the constraint after checking the data.</p>
+      </article>
+      <article class="find-card medium">
+        <span class="label">Medium · MIG013 · 002_risky_release.sql:10</span>
+        <h3>Non-concurrent index creation can block writes</h3>
+        <p><code>CREATE INDEX idx_orders_status ON orders(status);</code></p>
+        <p><strong>Direction:</strong> For production-scale tables, evaluate CONCURRENTLY outside a transaction and monitor invalid-index failure states.</p>
+      </article>
+    </section>
+
+    <section style="margin-top:3rem">
+      <p class="eyebrow">Required human checks</p>
+      <div class="limit-columns">
+        <div>
+          <h3>Before release</h3>
+          <ul>
+            <li>Production-like row counts and write rates</li>
+            <li>Old/new application compatibility</li>
+            <li>Backup and restore verification</li>
+            <li>Data quality and backfill validation</li>
+          </ul>
+        </div>
+        <div>
+          <h3>During release</h3>
+          <ul>
+            <li>Lock waits and blocked queries</li>
+            <li>Migration timeout and error states</li>
+            <li>Storage growth and replication lag</li>
+            <li>Rollback or forward-fix trigger</li>
+          </ul>
+        </div>
+      </div>
+      <p class="warning">This static scanner did not execute any SQL and cannot determine table size, traffic, locks, application compatibility, data validity, or rollback success. No findings does not mean safe.</p>
+    </section>
+  </main>
+</body>
+</html>

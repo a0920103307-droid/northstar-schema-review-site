@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="File-only PostgreSQL migration preflight for small SaaS teams. Catch likely data-loss, lock, rewrite, and rollout hazards before production.">
+  <title>Northstar Schema Review — PostgreSQL migration preflight</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Public pilot preview — contact and checkout are not yet enabled. No payment or customer relationship is active.
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="#scope">Scope</a>
+      <a href="#process">Process</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#limits">Limits</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">PostgreSQL preflight · file-only</p>
+        <h1>Catch the migration that can ruin launch day.</h1>
+        <p class="lede">A focused review of data-loss, lock, rewrite, compatibility, transaction, and rollback hazards before your migration reaches production.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#scope">See what is reviewed</a>
+          <a class="button secondary" href="sample-report.html">View sample report</a>
+        </div>
+        <p class="proof-line"><strong>No production credentials.</strong> Send schema and migration text, not customer data or database access.</p>
+      </div>
+
+      <aside class="status-card" aria-label="Sample automated scan summary">
+        <div class="status-top">
+          <span>Migration preflight</span>
+          <span class="pill danger">Review required</span>
+        </div>
+        <div class="score-row">
+          <span class="score">7</span>
+          <span>rule-based findings in a synthetic example</span>
+        </div>
+        <div class="risk-bars" aria-hidden="true">
+          <span class="bar critical"></span>
+          <span class="bar high"></span>
+          <span class="bar medium"></span>
+        </div>
+        <ul class="mini-findings">
+          <li><span class="dot critical"></span>Destructive column drop</li>
+          <li><span class="dot high"></span>Concurrent index inside transaction</li>
+          <li><span class="dot medium"></span>Non-concurrent index build</li>
+        </ul>
+        <p class="small">Illustrative synthetic input only. Automated output is not a safety guarantee.</p>
+      </aside>
+    </section>
+
+    <section class="strip" aria-label="Offer attributes">
+      <div><strong>24–48h</strong><span>target after complete scope</span></div>
+      <div><strong>File-only</strong><span>no DB connection</span></div>
+      <div><strong>Human-reviewed</strong><span>scan plus judgment</span></div>
+      <div><strong>Fixed scope</strong><span>no open-ended audit</span></div>
+    </section>
+
+    <section id="scope" class="section two-col">
+      <div>
+        <p class="eyebrow">What gets reviewed</p>
+        <h2>Not a generic code audit. A release decision for the migration.</h2>
+        <p>The review focuses on the failure modes that often survive unit tests but appear when a schema change meets real row counts, traffic, and a rolling deployment.</p>
+      </div>
+      <div class="check-grid">
+        <article><span>01</span><h3>Data loss</h3><p>Drops, destructive cleanup, unsafe backfills, and irreversible final steps.</p></article>
+        <article><span>02</span><h3>Locks & rewrites</h3><p>Type changes, constraint validation, index builds, and table-rewrite risks.</p></article>
+        <article><span>03</span><h3>Compatibility</h3><p>Expand/contract ordering, old application versions, renames, and nullable transitions.</p></article>
+        <article><span>04</span><h3>Transaction fit</h3><p>Concurrent-index wrappers, enum behavior, migration-runner assumptions, and ordering.</p></article>
+        <article><span>05</span><h3>Rollback</h3><p>Restore versus forward-fix choices, verification points, and stop conditions.</p></article>
+        <article><span>06</span><h3>Evidence</h3><p>File and line references, confidence, and concrete next steps for a human reviewer.</p></article>
+      </div>
+    </section>
+
+    <section id="process" class="section process">
+      <p class="eyebrow">How it works</p>
+      <h2>Small intake. Concrete output.</h2>
+      <div class="steps">
+        <article><span class="step-number">1</span><h3>Scope</h3><p>Send a redacted migration set, framework, PostgreSQL version, deployment approach, approximate table scale, and launch date.</p></article>
+        <article><span class="step-number">2</span><h3>Preflight</h3><p>Run the deterministic scanner, inspect the migration order, and separate confirmed hazards from context-dependent risks.</p></article>
+        <article><span class="step-number">3</span><h3>Review pack</h3><p>Receive findings, priorities, safe sequencing direction, rollback checks, and open questions to test in staging.</p></article>
+      </div>
+    </section>
+
+    <section id="pricing" class="section pricing">
+      <div class="pricing-copy">
+        <p class="eyebrow">Pilot offer</p>
+        <h2>One migration. One clear release review.</h2>
+        <p>Pricing is a pilot hypothesis, not a claim of market validation. Final scope must be accepted before any payment.</p>
+      </div>
+      <div class="price-card featured">
+        <div class="price-head"><span>Single migration review</span><strong>USD 49</strong></div>
+        <ul>
+          <li>Up to 20 SQL files or 1,000 lines</li>
+          <li>48-hour target after complete intake</li>
+          <li>Markdown issue report</li>
+          <li>One written clarification round</li>
+          <li>File-only delivery</li>
+        </ul>
+        <a class="button primary disabled" href="#limits" aria-disabled="true">Contact and checkout not yet enabled</a>
+      </div>
+      <div class="price-card">
+        <div class="price-head"><span>Launch review</span><strong>USD 149</strong></div>
+        <ul>
+          <li>Up to 75 SQL files or 5,000 lines</li>
+          <li>24–48 hour target after complete intake</li>
+          <li>Prioritized findings and rollout notes</li>
+          <li>Rollback checklist</li>
+          <li>30-minute written Q&amp;A scope</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="limits" class="section limits">
+      <div>
+        <p class="eyebrow">Boundaries</p>
+        <h2>Useful precisely because it stays narrow.</h2>
+      </div>
+      <div class="limit-columns">
+        <div>
+          <h3>Included</h3>
+          <ul>
+            <li>PostgreSQL SQL and schema text</li>
+            <li>Rule-based evidence plus human interpretation</li>
+            <li>Deployment and rollback questions</li>
+            <li>Synthetic or redacted samples</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Not included</h3>
+          <ul>
+            <li>Production database access or migration execution</li>
+            <li>A guarantee of zero downtime or zero data loss</li>
+            <li>Legal, compliance, or penetration-test certification</li>
+            <li>Open-ended application or security auditing</li>
+          </ul>
+        </div>
+      </div>
+      <p class="warning">No automated result means “no automated findings,” not “safe.” Always rehearse against representative staging data and verify backups, monitoring, and recovery.</p>
+    </section>
+
+    <section class="section final-cta">
+      <p class="eyebrow">Public pilot preview</p>
+      <h2>A clear release review for one migration.</h2>
+      <p>Contact and checkout are not enabled. This page does not accept customer files, production access, or payments.</p>
+      <a class="button secondary" href="#limits">Review service boundaries</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>Northstar Schema Labs is a working name. No company registration, trademark clearance, active checkout, direct file intake, or customer relationship is claimed.</p>
+    <p>Static HTML · no analytics · no cookies · no external assets</p>
+  </footer>
+</body>
+</html>
