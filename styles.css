@@ -181,6 +181,7 @@ h3 { font-size: 1.06rem; margin: 0 0 .55rem; letter-spacing: -.015em; }
 .final-cta { text-align: center; border-top: 1px solid var(--line); }
 .final-cta h2 { max-width: 16ch; margin-inline: auto; }
 .final-cta p:not(.eyebrow) { max-width: 42rem; margin: 0 auto 1.5rem; color: var(--muted); }
+.contact-address a { color: var(--mint); font-weight: 750; }
 footer { padding-block: 2.5rem 4rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .76rem; }
 footer p { max-width: 44rem; }
 @media (max-width: 900px) {
