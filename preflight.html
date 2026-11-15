@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Run a free browser-only PostgreSQL migration preflight. Detect destructive SQL, lock, rewrite, compatibility, checkpoint, and rollback risks without uploading files or connecting to a database.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>Free PostgreSQL Migration Preflight — Browser-only</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="preflight.css">
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Public pilot preview · free browser-only scan · no upload, database connection, analytics, or external requests
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="index.html">Service overview</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="#limits">Limits</a>
+    </nav>
+  </header>
+
+  <main class="tool-main">
+    <section class="tool-hero">
+      <div>
+        <p class="eyebrow">Free tool · PostgreSQL · browser-only</p>
+        <h1>Check the migration before it reaches production.</h1>
+        <p class="lede">Paste PostgreSQL schema or migration SQL. The scanner highlights destructive changes, lock and rewrite hazards, transaction problems, compatibility risks, and rollback blind spots. Nothing is uploaded.</p>
+      </div>
+      <aside class="privacy-card" aria-label="Privacy boundary">
+        <span class="privacy-mark" aria-hidden="true">LOCAL</span>
+        <h2>Your SQL stays in your browser.</h2>
+        <p>No file upload, database credential, server request, cookie, analytics, or third-party script is used.</p>
+        <p class="small">Still use redacted or synthetic SQL. This preview is not a secure intake channel for customer data.</p>
+      </aside>
+    </section>
+
+    <section class="tool-workspace" aria-labelledby="workspace-title">
+      <div class="editor-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Input</p>
+            <h2 id="workspace-title">Migration SQL</h2>
+          </div>
+          <span class="limit-badge">200,000 character limit</span>
+        </div>
+        <label for="sql-input" class="sr-only">PostgreSQL migration SQL</label>
+        <textarea id="sql-input" maxlength="200000" spellcheck="false" autocomplete="off" placeholder="-- Paste redacted PostgreSQL migration SQL here&#10;ALTER TABLE orders ADD COLUMN tenant_id uuid NOT NULL;"></textarea>
+        <p id="input-error" class="input-error" role="alert"></p>
+        <div class="tool-actions">
+          <button id="scan-button" class="button primary" type="button">Scan locally</button>
+          <button id="sample-button" class="button secondary" type="button">Load synthetic example</button>
+          <button id="clear-button" class="button secondary" type="button">Clear</button>
+        </div>
+        <p class="keyboard-hint">Keyboard: Ctrl/Cmd + Enter to scan. No SQL leaves this page.</p>
+      </div>
+
+      <aside id="empty-state" class="tool-empty-state" aria-live="polite">
+        <p class="eyebrow">Result</p>
+        <h2>Evidence for a human review</h2>
+        <p>The scan returns rule-based signals, not a safety certificate. Table size, write rate, locks, application compatibility, and rollback success require staging evidence.</p>
+        <ul>
+          <li>No automated upload</li>
+          <li>No database connection</li>
+          <li>No customer data required</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section id="results" class="tool-results" aria-labelledby="results-title" hidden>
+      <div class="results-head">
+        <div>
+          <p class="eyebrow">Privacy-preserving preflight</p>
+          <h2 id="results-title">Automated findings</h2>
+        </div>
+        <button id="copy-button" class="button secondary" type="button">Copy text report</button>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card status-card-result"><span>Status</span><strong id="result-status" data-status="BLOCK">Block</strong></div>
+        <div class="summary-card"><span>Heuristic risk</span><strong id="result-risk">0 / 100</strong></div>
+        <div class="summary-card"><span>Critical</span><strong id="count-critical">0</strong></div>
+        <div class="summary-card"><span>High</span><strong id="count-high">0</strong></div>
+        <div class="summary-card"><span>Medium</span><strong id="count-medium">0</strong></div>
+        <div class="summary-card"><span>All findings</span><strong id="count-total">0</strong></div>
+      </div>
+      <p id="summary-text" class="summary-text"></p>
+      <div id="findings-list" class="findings-list"></div>
+      <div class="warning result-warning">No automated finding means only that this small rule set did not match. Always rehearse against representative staging data and verify backups, monitoring, application compatibility, and recovery.</div>
+    </section>
+
+    <section class="tool-explainer">
+      <div>
+        <p class="eyebrow">What the browser checks</p>
+        <h2>Fast signals for the failure modes that survive happy-path tests.</h2>
+      </div>
+      <div class="tool-check-grid">
+        <article><span>01</span><h3>Destructive SQL</h3><p>DROP, TRUNCATE, unqualified UPDATE or DELETE, type changes, and column removal.</p></article>
+        <article><span>02</span><h3>Lock & rewrite</h3><p>Index builds, constraint validation, SET NOT NULL, REINDEX, VACUUM FULL, and volatile defaults.</p></article>
+        <article><span>03</span><h3>Transaction fit</h3><p>Concurrent index and enum changes inside explicit transaction blocks.</p></article>
+        <article><span>04</span><h3>Compatibility</h3><p>Renames and NOT NULL additions that may break old application versions or existing rows.</p></article>
+      </div>
+    </section>
+
+    <section id="limits" class="tool-limits">
+      <div>
+        <p class="eyebrow">Hard boundaries</p>
+        <h2>Useful precisely because it stays narrow.</h2>
+      </div>
+      <div class="limit-columns">
+        <div><h3>Included</h3><ul><li>PostgreSQL SQL text</li><li>Rule-based evidence and line numbers</li><li>Severity and review directions</li><li>Copyable text report</li></ul></div>
+        <div><h3>Not included</h3><ul><li>Database access or migration execution</li><li>A zero-downtime or zero-data-loss guarantee</li><li>Performance, legal, or security certification</li><li>A replacement for staging and human review</li></ul></div>
+      </div>
+      <p class="warning">This tool does not inspect row counts, query plans, application code, production locks, data quality, backups, or rollback success. It cannot prove that a migration is safe.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Northstar Schema Labs is a working name. This browser preview has no active checkout, contact form, file intake, analytics, cookies, or customer relationship.</p>
+    <p>Static HTML · local JavaScript · no external requests</p>
+  </footer>
+
+  <script src="scanner.js" defer></script>
+  <script src="preflight.js" defer></script>
+</body>
+</html>
+
