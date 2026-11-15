@@ -254,6 +254,7 @@ dd { margin: 0; font-size: .82rem; }
   padding-block: clamp(5rem, 9vw, 8rem);
   border-bottom: 1px solid var(--line);
 }
+.problem > *, .deliverable > *, .limits > * { min-width: 0; }
 .section-label { padding-top: .65rem; }
 .problem-copy > h2 { max-width: 17ch; }
 .problem-grid {
