@@ -2,12 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/</loc>
+    <lastmod>2026-11-16</lastmod>
   </url>
   <url>
     <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/preflight.html</loc>
+    <lastmod>2026-11-16</lastmod>
   </url>
   <url>
     <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html</loc>
+    <lastmod>2026-11-16</lastmod>
+  </url>
+  <url>
+    <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/writing.html</loc>
+    <lastmod>2026-11-16</lastmod>
+  </url>
+  <url>
+    <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/postgresql-migration-safety-checklist.html</loc>
+    <lastmod>2026-11-16</lastmod>
+  </url>
+  <url>
+    <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-migration-review-without-production-access.html</loc>
+    <lastmod>2026-11-16</lastmod>
+  </url>
+  <url>
+    <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/prisma-postgresql-migration-risks.html</loc>
+    <lastmod>2026-11-16</lastmod>
   </url>
   <url>
     <loc>https://a0920103307-droid.github.io/northstar-schema-review-site/export-research/</loc>

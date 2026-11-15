@@ -6,14 +6,23 @@
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Run a free browser-only PostgreSQL migration preflight. Detect destructive SQL, lock, rewrite, compatibility, checkpoint, and rollback risks without uploading files or connecting to a database.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://a0920103307-droid.github.io/northstar-schema-review-site/preflight.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Northstar Schema Review">
+  <meta property="og:title" content="Free PostgreSQL Migration Preflight — Browser-only">
+  <meta property="og:description" content="Scan redacted PostgreSQL migration text locally for destructive SQL, lock, rewrite, compatibility, transaction, and rollback signals.">
+  <meta property="og:url" content="https://a0920103307-droid.github.io/northstar-schema-review-site/preflight.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Free PostgreSQL Migration Preflight — Browser-only">
+  <meta name="twitter:description" content="Scan redacted PostgreSQL migration text locally for destructive SQL, lock, rewrite, compatibility, transaction, and rollback signals.">
   <title>Free PostgreSQL Migration Preflight — Browser-only</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="preflight.css">
 </head>
 <body>
   <div class="draft-banner" role="status">
-    Public pilot preview · free browser-only scan · no upload, database connection, analytics, or external requests
+    Public free tool · browser-only scan · no upload, database connection, analytics, or external requests
   </div>
 
   <header class="site-header">
@@ -119,10 +128,21 @@
       </div>
       <p class="warning">This tool does not inspect row counts, query plans, application code, production locks, data quality, backups, or rollback success. It cannot prove that a migration is safe.</p>
     </section>
+
+    <section class="tool-explainer" aria-labelledby="next-step-title">
+      <div>
+        <p class="eyebrow">Need a written review?</p>
+        <h2 id="next-step-title">Take the automated signals to a fixed-scope preflight.</h2>
+      </div>
+      <div>
+        <p>The paid service reviews redacted migration SQL and schema text against a release checklist, then returns a prioritized report with file references and one written clarification round.</p>
+        <p><a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review the service on Upwork</a> <a class="button secondary" href="sample-report.html">View a synthetic report</a></p>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <p>Northstar Schema Labs is a working name. This browser preview has no active checkout, contact form, file intake, analytics, cookies, or customer relationship.</p>
+    <p>Northstar Schema Labs is a working name. This site has no checkout, contact form, file intake, analytics, or cookies; paid project terms and payment remain on Upwork.</p>
     <p>Static HTML · local JavaScript · no external requests</p>
   </footer>
 

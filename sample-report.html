@@ -4,9 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
+  <meta name="description" content="Synthetic PostgreSQL migration preflight report showing destructive DDL, lock, rewrite, compatibility, transaction, and rollback signals.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html">
-  <title>Sample migration preflight report</title>
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Northstar Schema Review">
+  <meta property="og:title" content="Synthetic PostgreSQL Migration Preflight Report">
+  <meta property="og:description" content="See the report format: prioritized migration findings, source references, verification directions, and explicit safety limits.">
+  <meta property="og:url" content="https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Synthetic PostgreSQL Migration Preflight Report">
+  <meta name="twitter:description" content="See the report format: prioritized migration findings, source references, verification directions, and explicit safety limits.">
+  <title>Synthetic PostgreSQL Migration Preflight Report | Northstar Schema Review</title>
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Synthetic PostgreSQL Migration Preflight Report",
+    "description": "A synthetic report showing prioritized migration findings, source references, verification directions, and explicit safety limits.",
+    "datePublished": "2026-11-16",
+    "dateModified": "2026-11-16",
+    "mainEntityOfPage": "https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html",
+    "author": {
+      "@type": "Organization",
+      "name": "Northstar Schema Labs (working name)"
+    }
+  }
+  </script>
   <style>
     .report-wrap { max-width: 1040px; margin: 0 auto; padding: 4rem 1.25rem 6rem; }
     .report-head { padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
@@ -100,6 +125,13 @@
         </div>
       </div>
       <p class="warning">This static scanner did not execute any SQL and cannot determine table size, traffic, locks, application compatibility, data validity, or rollback success. No findings does not mean safe.</p>
+    </section>
+
+    <section style="margin-top:3rem">
+      <p class="eyebrow">Next step</p>
+      <h2>Apply this format to redacted migration text.</h2>
+      <p>The paid service accepts only redacted SQL or schema text and returns a prioritized report with one written clarification round. No production credentials or database connection are requested.</p>
+      <p><a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review the service on Upwork</a> <a class="button secondary" href="preflight.html">Run the free browser scan</a></p>
     </section>
   </main>
 </body>
