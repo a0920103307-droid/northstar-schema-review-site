@@ -14,6 +14,7 @@ Canonical site: https://a0920103307-droid.github.io/northstar-schema-review-site
 - Prisma-generated migration risks: https://a0920103307-droid.github.io/northstar-schema-review-site/prisma-postgresql-migration-risks.html
 - Synthetic migration report: https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html
 - Synthetic Supabase SECURITY DEFINER and RLS review: https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html
+- Redacted review scope template: https://a0920103307-droid.github.io/northstar-schema-review-site/review-intake.html
 
 ## Service scope
 

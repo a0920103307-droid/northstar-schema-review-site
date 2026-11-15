@@ -11,6 +11,7 @@ This repository hosts the public static overview, technical guides, browser-only
 - [Free browser-only PostgreSQL preflight](https://a0920103307-droid.github.io/northstar-schema-review-site/preflight.html)
 - [Synthetic migration report](https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html)
 - [Synthetic Supabase SECURITY DEFINER and RLS review](https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html)
+- [PostgreSQL migration review scope template](https://a0920103307-droid.github.io/northstar-schema-review-site/review-intake.html)
 - [Upwork service](https://www.upwork.com/services/product/2121960555841830491)
 
 ## What the review covers
@@ -74,6 +75,7 @@ There is no analytics, cookie, form, upload endpoint, payment flow, or external 
 - `index.html` — service overview and packages
 - `preflight.html` / `scanner.js` / `preflight.js` — browser-only scanner
 - `writing.html` — technical guide index
+- `review-intake.html` — copyable redacted scope template
 - `*.html` — static guides and synthetic samples
 - `article.css`, `styles.css`, `preflight.css` — presentation
 - `sitemap.xml`, `robots.txt` — crawler discovery

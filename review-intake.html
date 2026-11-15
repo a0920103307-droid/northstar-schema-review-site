@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A copyable scope template for requesting a file-only PostgreSQL migration review without credentials, customer rows, backups, or production access.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://a0920103307-droid.github.io/northstar-schema-review-site/review-intake.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Northstar Schema Review">
+  <meta property="og:title" content="PostgreSQL Migration Review Scope Template">
+  <meta property="og:description" content="Prepare a focused, redacted review request with migration scope, deployment context, compatibility questions, and rollback evidence.">
+  <meta property="og:url" content="https://a0920103307-droid.github.io/northstar-schema-review-site/review-intake.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PostgreSQL Migration Review Scope Template">
+  <meta name="twitter:description" content="Prepare a focused, redacted review request with migration scope, deployment context, compatibility questions, and rollback evidence.">
+  <title>PostgreSQL Migration Review Scope Template | Northstar Schema Review</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="article.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "PostgreSQL Migration Review Scope Template",
+    "description": "A copyable request template for a file-only PostgreSQL migration review.",
+    "datePublished": "2026-11-16",
+    "dateModified": "2026-11-16",
+    "mainEntityOfPage": "https://a0920103307-droid.github.io/northstar-schema-review-site/review-intake.html",
+    "author": {
+      "@type": "Organization",
+      "name": "Northstar Schema Labs (working name)"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="draft-banner" role="status">
+    Static request template · no form submission, upload, analytics, or customer-data collection
+  </div>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Northstar Schema Review home">
+      <span class="brand-mark" aria-hidden="true">N</span>
+      <span>Northstar <em>Schema Review</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="writing.html">Guides</a>
+      <a href="index.html#scope">Scope</a>
+      <a href="preflight.html">Free preflight</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="https://www.upwork.com/services/product/2121960555841830491">Upwork</a>
+    </nav>
+  </header>
+
+  <main class="article-shell">
+    <a class="back-link" href="index.html">← Service overview</a>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">Buyer checklist · redacted scope</p>
+        <h1>Prepare a review request without exposing production.</h1>
+        <p class="lede">Copy this template into your email or Upwork message. It is a static checklist, not a web form; nothing entered or attached here is uploaded or stored.</p>
+      </header>
+
+      <div class="article-body">
+        <h2>Scope request template</h2>
+        <pre><code>1. Business context
+- Product or feature:
+- PostgreSQL version and provider:
+- Migration runner or deployment tool:
+- Target release date and timezone:
+- Current stage: planning / staging / pre-production
+
+2. Migration scope
+- Number of SQL files:
+- Approximate total lines:
+- Affected tables or schemas:
+- Destructive operations: DROP / TRUNCATE / type change / rename / none
+- Existing-data backfill required: yes / no / unknown
+- Largest affected table and approximate row count:
+- Indexes, constraints, or enum changes:
+
+3. Deployment and compatibility
+- Can old and new application versions run at the same time?
+- Is the migration expand/contract sequenced?
+- Maintenance window or online-change requirement:
+- Transaction behavior of the migration runner:
+- Rollback method: reverse migration / restore / forward fix / undecided
+- Backup and restore evidence:
+- Staging rehearsal completed:
+
+4. Requested output
+- Prioritized Markdown findings report
+- File and line references
+- Destructive DDL and possible data-loss review
+- Lock and table-rewrite questions
+- Compatibility and sequencing questions
+- Rollback concerns and evidence gaps
+- One written clarification round
+
+5. Confidentiality confirmation
+- The migration text is synthetic.
+OR
+- The migration text is redacted and contains no credentials, customer rows, or production data.
+
+6. Decision requested
+- Desired package: Basic / Extended / not sure
+- Needed by:
+- Questions for the reviewer:</code></pre>
+
+        <h2>Do not send</h2>
+        <ul>
+          <li>passwords, API keys, tokens, or connection strings;</li>
+          <li>customer or employee records;</li>
+          <li>database dumps, backups, or screenshots containing private data;</li>
+          <li>production access requests.</li>
+        </ul>
+
+        <h2>What happens next</h2>
+        <p>The scope is reviewed against the file-only boundary. If it fits, the package, timing, redacted input method, and acceptance terms are confirmed in writing before paid work starts.</p>
+        <p>If the request requires production access, live execution, or a security guarantee, it is outside this listing and must not be represented as covered.</p>
+      </div>
+
+      <aside class="article-cta">
+        <p class="eyebrow">Ready to scope the review?</p>
+        <h2>Use the existing contact channel.</h2>
+        <p>Copy the template into a short email or Upwork message. Do not attach credentials, customer rows, backups, or production data.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://www.upwork.com/services/product/2121960555841830491">Review on Upwork</a>
+          <a class="button secondary" href="mailto:A0920103307@gmail.com?subject=PostgreSQL%20migration%20review%20scope">Email a redacted scope</a>
+          <a class="button secondary" href="postgresql-migration-review-template.md">Open Markdown template</a>
+        </div>
+      </aside>
+    </article>
+  </main>
+
+  <footer>
+    <p>Northstar Schema Labs is a working name. This template is informational; no form, upload, customer relationship, or production verification is created by this page.</p>
+    <p>Static HTML · no analytics · no cookies · no file intake</p>
+  </footer>
+</body>
+</html>
