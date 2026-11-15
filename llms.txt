@@ -1,0 +1,47 @@
+# Northstar Schema Review
+
+> File-only PostgreSQL migration preflight for small SaaS teams preparing schema changes for production. Reviews redacted SQL and schema text without connecting to a database or requesting credentials.
+
+Canonical site: https://a0920103307-droid.github.io/northstar-schema-review-site/
+
+## Preferred pages
+
+- Service overview: https://a0920103307-droid.github.io/northstar-schema-review-site/
+- Free browser-only PostgreSQL preflight: https://a0920103307-droid.github.io/northstar-schema-review-site/preflight.html
+- Technical guide index: https://a0920103307-droid.github.io/northstar-schema-review-site/writing.html
+- PostgreSQL migration safety checklist: https://a0920103307-droid.github.io/northstar-schema-review-site/postgresql-migration-safety-checklist.html
+- Supabase RLS review guide: https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-migration-review-without-production-access.html
+- Prisma-generated migration risks: https://a0920103307-droid.github.io/northstar-schema-review-site/prisma-postgresql-migration-risks.html
+- Synthetic migration report: https://a0920103307-droid.github.io/northstar-schema-review-site/sample-report.html
+- Synthetic Supabase SECURITY DEFINER and RLS review: https://a0920103307-droid.github.io/northstar-schema-review-site/supabase-rls-sample-report.html
+
+## Service scope
+
+- Destructive DDL and likely data-loss paths.
+- Locking and table-rewrite risks visible in migration text.
+- Transaction and migration-runner incompatibilities.
+- Application compatibility and expand/contract sequencing.
+- Rollback questions and evidence gaps.
+- Supabase RLS, grants, security-definer functions, and deny-path questions when explicitly scoped.
+
+## Public packages
+
+- USD 49 Basic: up to 20 SQL files or 1,000 lines, two-day delivery, one revision.
+- USD 149 Extended: USD 49 Basic plus a USD 100 add-on for up to 75 SQL files or 5,000 lines and expanded rollout detail.
+
+Paid project terms, payment, and delivery remain on Upwork:
+https://www.upwork.com/services/product/2121960555841830491
+
+## Boundaries
+
+- No production database access.
+- No credentials, connection strings, customer rows, backups, or production data.
+- No migration execution or production changes.
+- No zero-downtime or zero-data-loss guarantee.
+- No legal, compliance, penetration-test, or security certification.
+
+## Contact
+
+Public pilot inquiries: A0920103307@gmail.com
+
+Send a short, redacted scope first. Do not send credentials, customer rows, production dumps, backups, or a database connection.

@@ -77,6 +77,7 @@ There is no analytics, cookie, form, upload endpoint, payment flow, or external 
 - `*.html` — static guides and synthetic samples
 - `article.css`, `styles.css`, `preflight.css` — presentation
 - `sitemap.xml`, `robots.txt` — crawler discovery
+- `llms.txt` — concise service and canonical-page context for AI crawlers
 - `73b57f7a9173411f9f24a98a933dc96f.txt` — IndexNow verification key
 
 ## Contact
