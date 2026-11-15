@@ -142,6 +142,29 @@ h1 span {
   font: 750 .66rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   white-space: nowrap;
 }
+.faq {
+  display: grid;
+  grid-template-columns: minmax(220px, .42fr) minmax(0, .58fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  padding-block: clamp(3rem, 7vw, 6rem);
+  border-top: 1px solid var(--line);
+}
+.faq-list { display: grid; gap: .8rem; }
+.faq details {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 246, .72);
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.faq details p {
+  margin: .8rem 0 0;
+  color: var(--muted);
+  font-size: .92rem;
+}
 h2 {
   margin: 0 0 1.25rem;
   font-size: clamp(2.15rem, 4.5vw, 4rem);
@@ -490,7 +513,7 @@ footer a { color: var(--green); }
   .ticker { grid-template-columns: 1fr 1fr; }
   .ticker div:nth-child(2) { border-right: 0; }
   .ticker div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-  .problem, .deliverable, .limits { grid-template-columns: 1fr; gap: 1.5rem; }
+  .problem, .deliverable, .limits, .faq { grid-template-columns: 1fr; gap: 1.5rem; }
   .section-label { padding-top: 0; }
   .problem-grid { grid-template-columns: 1fr; }
   .disclosure { grid-column: 1; }
