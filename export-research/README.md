@@ -7,6 +7,7 @@ Static public offer and samples for company-level export-channel research.
 - `index.html`: Traditional Chinese offer, scope, methodology, boundaries, and email CTA.
 - `english/index.html`: English service page for international buyer and partner inquiries.
 - `english/washington-dc-sample.html`: 10-row source-linked method sample with no personal contact data.
+- `partners/index.html`: Traditional Chinese white-label partner offer and boundaries.
 - `downloads/washington-dc-method-sample.pdf`: two-page English portfolio/method sample.
 - `sample.html`: five-company Poland CNC channel sample.
 - `guide.html`: buyer guide for evaluating a distributor shortlist.
