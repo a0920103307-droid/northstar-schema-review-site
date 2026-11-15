@@ -5,7 +5,7 @@ Static public offer and samples for company-level export-channel research.
 ## Files
 
 - `index.html`: Traditional Chinese offer, scope, methodology, boundaries, and email CTA.
-- `english/index.html`: English service page for international buyers and Upwork portfolio use.
+- `english/index.html`: English service page for international buyer and partner inquiries.
 - `english/washington-dc-sample.html`: 10-row source-linked method sample with no personal contact data.
 - `downloads/washington-dc-method-sample.pdf`: two-page English portfolio/method sample.
 - `sample.html`: five-company Poland CNC channel sample.
